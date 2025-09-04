@@ -1,17 +1,56 @@
 import Header from './Header'
 import { BACKGROUND_IMAGE } from '../Utils/constants'
-import { useRef, useState } from 'react'
 import { checkValidData } from '../Utils/validate'
 import { MdOutlineCancel } from "react-icons/md"; 
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth"
+import { auth } from "../Utils/firebase"
+import { useNavigate } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import { addUser } from '../Utils/userSlice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
     const [isSignInForm, setIsSignInForm] = useState(true);
     const [errorMsg, setErrorMsg] = useState(null);
     const email = useRef(null);
     const password = useRef(null); 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const HandlerButtonClicked = () => {
-       setErrorMsg(checkValidData(email.current.value, password.current.value))
+       const message = checkValidData(email.current.value, password.current.value);
+       setErrorMsg(message);
+       if(message) return;
+
+        //sign up logic
+       if(!isSignInForm){
+        createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+            .then((userCredential) => {
+                const { uid, email, displayName, photoURL } = userCredential.user;
+                dispatch(addUser({ uid, email, displayName, photoURL }));
+                navigate("/browse");
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                setErrorMsg(errorMessage)
+            });
+       }
+        //sign in logic
+       else{
+        signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+        .then((userCredential) => {
+            const { uid, email, displayName, photoURL } = userCredential.user;
+            dispatch(addUser({ uid, email, displayName, photoURL }));
+            navigate("/browse");
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            setErrorMsg(errorMessage)
+            console.log(errorCode + "-" + errorMessage)
+        });
+       }
     }
 
     const HandlerSignUpForm = () =>{
@@ -25,7 +64,7 @@ const Login = () => {
         <img 
             src={BACKGROUND_IMAGE}
             alt="background-img"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover opacity-50"
         />
 
         {/* Form container */}
@@ -81,8 +120,7 @@ const Login = () => {
             </p>
             </form>
         </div>
-</div>
-
+       </div>
     </div>
   )
 }
