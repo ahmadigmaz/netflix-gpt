@@ -2,20 +2,19 @@ import Header from './Header'
 import { BACKGROUND_IMAGE } from '../Utils/constants'
 import { checkValidData } from '../Utils/validate'
 import { MdOutlineCancel } from "react-icons/md"; 
-import {createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth"
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword , updateProfile } from "firebase/auth"
 import { auth } from "../Utils/firebase"
-import { useNavigate } from 'react-router-dom';
 import { useState, useRef } from 'react';
-import { addUser } from '../Utils/userSlice';
 import { useDispatch } from 'react-redux';
+import { addUser } from '../Utils/userSlice';
 
 const Login = () => {
     const [isSignInForm, setIsSignInForm] = useState(true);
     const [errorMsg, setErrorMsg] = useState(null);
     const email = useRef(null);
+    const name = useRef(null);
     const password = useRef(null); 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
 
     const HandlerButtonClicked = () => {
        const message = checkValidData(email.current.value, password.current.value);
@@ -26,12 +25,28 @@ const Login = () => {
        if(!isSignInForm){
         createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
             .then((userCredential) => {
-                const { uid, email, displayName, photoURL } = userCredential.user;
-                dispatch(addUser({ uid, email, displayName, photoURL }));
-                navigate("/browse");
+                const user = userCredential.user;
+                console.log(name.current.value);
+                //update profile
+                updateProfile(user, {
+                displayName: name.current.value,
+                photoURL: "https://example.com/jane-q-user/profile.jpg"
+                })
+                .then(() => {
+                    const {uid, email, displayName, photoURL} = auth.currentUser
+                    dispatch(addUser({
+                        uid:uid,
+                        email:email,
+                        displayName:displayName,
+                        photoURL:photoURL
+                    }))
+                })
+                .catch((error) => {
+                    setErrorMsg(error);
+                })
             })
             .catch((error) => {
-                const errorCode = error.code;
+              //  const errorCode = error.code;
                 const errorMessage = error.message;
                 setErrorMsg(errorMessage)
             });
@@ -40,9 +55,13 @@ const Login = () => {
        else{
         signInWithEmailAndPassword(auth, email.current.value, password.current.value)
         .then((userCredential) => {
-            const { uid, email, displayName, photoURL } = userCredential.user;
-            dispatch(addUser({ uid, email, displayName, photoURL }));
-            navigate("/browse");
+            const {uid, email, displayName, photoURL} = auth.currentUser
+            dispatch(addUser({
+                uid:uid,
+                email:email,
+                displayName:displayName,
+                photoURL:photoURL
+            }))
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -64,14 +83,14 @@ const Login = () => {
         <img 
             src={BACKGROUND_IMAGE}
             alt="background-img"
-            className="absolute inset-0 w-full h-full object-cover opacity-50"
+            className="absolute inset-0 w-full h-full object-cover"
         />
 
         {/* Form container */}
         <div className="absolute inset-0 flex items-center justify-center">
             <form 
             onSubmit={(e) => e.preventDefault()} 
-            className="w-11/12 sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-3/12 p-6 sm:p-12 bg-black/80 text-white rounded-lg"
+            className="w-11/12 sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-3/12 sm:p-12 bg-black/80 text-white rounded-lg"
             >
             <h1 className="font-bold text-3xl py-4">
                 {isSignInForm ? "Sign In" : "Sign Up"}
@@ -82,6 +101,7 @@ const Login = () => {
                 className="p-4 my-4 w-full bg-gray-600/50 rounded-md"
                 type="text" 
                 placeholder="Full Name"
+                ref={name}
                 />
             )}
 

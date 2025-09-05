@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { NETFLIX_LOGO, USER_AVATAR } from "../Utils/constants";
 import { ChevronDown, LogOut, HelpCircle, User, Users } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { removeUser } from "../Utils/userSlice";
+import { addUser, removeUser } from "../Utils/userSlice";
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../Utils/firebase";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,9 +14,33 @@ const Header = () => {
   const user = useSelector((state) => state.user);
 
   const logOuthandler = () => {
-    dispatch(removeUser());
-    navigate("/");
+    signOut(auth)
+    .then(() => {
+    })
+    .catch((error) => {
+      console.error("Error signing out:", error);
+    });
   };
+
+useEffect(()=>{
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const {uid,email, displayName, photoURL} = user
+    dispatch(addUser({
+      uid:uid,
+      email:email,
+      displayName:displayName,
+      photoURL:photoURL
+  }))
+   navigate("/browse");
+  }
+  else {
+   dispatch(removeUser());
+   navigate("/")
+  }
+});
+},[])
+
 
   useEffect(() => {
     const onDocClick = () => setIsOpen(false);
@@ -26,13 +52,12 @@ const Header = () => {
   const stop = (e) => e.stopPropagation();
 
   return (
-    <div className="absolute inset-x-0 top-0 px-4 sm:px-8 md:px-16 py-1 bg-gradient-to-b from-black/80 to-transparent z-10 flex justify-between items-center">
+    <div className="absolute inset-x-0 top-0 px-4 sm:px-8 md:px-16 py-1 bg-gradient-to-b z-10 flex justify-between items-center">
       <img
         src={NETFLIX_LOGO}
         alt="netflix-logo"
-        className="w-20 sm:w-28 md:w-32 lg:w-36 xl:w-40 object-contain"
+        className="w-16 sm:w-24 md:w-28 lg:w-32 xl:w-36 object-contain"
       />
-
       {user && (
         // NOTE: "group" enables group-hover, and we're also using isOpen state for clicks
         <div className="relative group" onClick={stop}>

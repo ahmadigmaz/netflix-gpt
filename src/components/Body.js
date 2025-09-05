@@ -13,6 +13,7 @@ const router = createBrowserRouter([
         element: <Browse/>
     }
 ])
+
 return (
     <div>
         <RouterProvider router={router}/>

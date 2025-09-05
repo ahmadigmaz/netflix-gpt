@@ -6,6 +6,7 @@ const Browse = () => {
     <div>
       <Header/>
     </div>
+    
   )
 }
 
