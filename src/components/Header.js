@@ -6,71 +6,72 @@ import { addUser, removeUser } from "../Utils/userSlice";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../Utils/firebase";
+import useTvShows from "../hooks/useTvShows";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+  useTvShows();
 
-  const logOuthandler = () => {
-    signOut(auth)
-    .then(() => {
-    })
-    .catch((error) => {
-      console.error("Error signing out:", error);
-    });
-  };
+const logOuthandler = () => {
+  signOut(auth)
+  .then(() => {
+  })
+  .catch((error) => {
+    console.error("Error signing out:", error);
+  });
+};
 
 useEffect(()=>{
-      const unsubscribe =  onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const {uid,email, displayName, photoURL} = user
-        dispatch(addUser({
-          uid:uid,
-          email:email,
-          displayName:displayName,
-          photoURL:photoURL
-      }))
-      navigate("/browse");
-      }
-      else {
-      dispatch(removeUser());
-      navigate("/")
-      }
-    })
+    const unsubscribe =  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const {uid,email, displayName, photoURL} = user
+      dispatch(addUser({
+        uid:uid,
+        email:email,
+        displayName:displayName,
+        photoURL:photoURL
+    }))
+    navigate("/browse");
+    }
+    else {
+    dispatch(removeUser());
+    navigate("/")
+    }
+  })
 
-    //unsubscribe the onAuthStateChange api once useeffect do his work
-    return () => unsubscribe();
-
+  //unsubscribe the onAuthStateChange api once useeffect do his work
+  return () => unsubscribe();
 },[])
-
-
-  useEffect(() => {
-    const onDocClick = () => setIsOpen(false);
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
-  }, []);
 
   // stop propagation so clicking inside doesn't immediately close
   const stop = (e) => e.stopPropagation();
 
   return (
     <div className="fixed top-0 left-0 w-full z-50 bg-gradient-to-b from-black/80 to-transparent px-4 sm:px-8 md:px-16 py-2 flex justify-between items-center">
+
+     <div className="flex">
       <img
         src={NETFLIX_LOGO}
         alt="netflix-logo"
         className="w-20 sm:w-28 md:w-32 lg:w-36 xl:w-40 object-contain"
       />
+      {user && <ul className="flex flex-wrap md:flex-row text-white font-medium text-sm sm:text-base mt-3 mx-1">
+        <li className="m-1 sm:m-2 hover:text-gray-300 cursor-pointer">Home</li>
+        <li className="m-1 sm:m-2 hover:text-gray-300 cursor-pointer">TV Shows</li>
+        <li className="m-1 sm:m-2 hover:text-gray-300 cursor-pointer">Movies</li>
+        <li className="m-1 sm:m-2 hover:text-gray-300 cursor-pointer">Games</li>
+      </ul>}
+    </div>
+
+
       {user && (
         // NOTE: "group" enables group-hover, and we're also using isOpen state for clicks
         <div className="relative group" onClick={stop}>
           <div
             className="flex items-center gap-1 cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation(); // prevent doc click
-              setIsOpen((v) => !v);
-            }}
           >
             <img src={USER_AVATAR} alt="user-avatar" className="w-8 h-8 rounded" />
             <ChevronDown className="text-white w-4 h-4" />

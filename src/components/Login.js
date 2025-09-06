@@ -26,7 +26,6 @@ const Login = () => {
         createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
             .then((userCredential) => {
                 const user = userCredential.user;
-                console.log(name.current.value);
                 //update profile
                 updateProfile(user, {
                 displayName: name.current.value,
@@ -67,7 +66,6 @@ const Login = () => {
             const errorCode = error.code;
             const errorMessage = error.message;
             setErrorMsg(errorMessage)
-            console.log(errorCode + "-" + errorMessage)
         });
        }
     }
@@ -90,58 +88,59 @@ const Login = () => {
 
         {/* Form container */}
         <div className="absolute inset-0 flex items-center justify-center">
-            <form 
+        <form 
             onSubmit={(e) => e.preventDefault()} 
-            className="w-11/12 sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-3/12 sm:p-12 bg-black/80 text-white rounded-lg"
-            >
+            className="w-full max-w-md p-6 sm:p-12 bg-black/80 text-white rounded-lg"
+        >
             <h1 className="font-bold text-3xl py-4">
-                {isSignInForm ? "Sign In" : "Sign Up"}
+            {isSignInForm ? "Sign In" : "Sign Up"}
             </h1>
 
             {!isSignInForm && (
-                <input 
+            <input 
                 className="p-4 my-4 w-full bg-gray-600/50 rounded-md"
                 type="text" 
                 placeholder="Full Name"
                 ref={name}
-                />
+            />
             )}
 
             <input 
-                ref={email}
-                className="p-4 my-4 w-full bg-gray-600/50 rounded-md"
-                type="text" 
-                placeholder="Email or Phone Number"
+            ref={email}
+            className="p-4 my-4 w-full bg-gray-600/50 rounded-md"
+            type="text" 
+            placeholder="Email or Phone Number"
             />
             <input 
-                ref={password}
-                className="p-4 my-4 w-full bg-gray-600/50 rounded-md" 
-                type="password" 
-                placeholder="Password"
+            ref={password}
+            className="p-4 my-4 w-full bg-gray-600/50 rounded-md" 
+            type="password" 
+            placeholder="Password"
             />
 
             {errorMsg && (
-                <p className="text-red-600 flex items-center gap-2">
+            <p className="text-red-600 flex items-center gap-2">
                 <MdOutlineCancel className="text-red-600 text-xl " />
                 {errorMsg}
-                </p>
+            </p>
             )}
 
             <button 
-                onClick={() => HandlerButtonClicked(email, password)} 
-                className="bg-red-700 p-4 my-6 w-full rounded-lg font-bold"
+            onClick={() => HandlerButtonClicked(email, password)} 
+            className="bg-red-700 p-4 my-6 w-full rounded-lg font-bold"
             >
-                {isSignInForm ? "Sign In" : "Sign Up"}
+            {isSignInForm ? "Sign In" : "Sign Up"}
             </button>
 
             <p 
-                onClick={HandlerSignUpForm} 
-                className="font-bold text-xl text-gray-400 cursor-pointer"
+            onClick={HandlerSignUpForm} 
+            className="font-bold text-xl text-gray-400 cursor-pointer"
             >
-                {isSignInForm ? "New to Netflix? Sign up now." : "Already a User? Sign in now"}
+            {isSignInForm ? "New to Netflix? Sign up now." : "Already a User? Sign in now"}
             </p>
-            </form>
+        </form>
         </div>
+
        </div>
     </div>
   )

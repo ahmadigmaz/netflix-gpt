@@ -9,3 +9,5 @@ export const options = {
     Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjZWZiM2I1YmFjYmMyMjQyZjlkOWVkNTdmYWE1ZGQ2YSIsIm5iZiI6MTc1NzA4MDc4OC4yMzgwMDAyLCJzdWIiOiI2OGJhZWNkNDg1N2I5MWE0YzE4Y2UyZDQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.zVipsFg5F4BSZEFl2t5jb2hLBoPOlptaaUTY1HpQjYM'
   }
 };
+
+export const  CARD_IMAGE_URL = "https://image.tmdb.org/t/p/w300"

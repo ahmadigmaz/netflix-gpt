@@ -15,7 +15,6 @@ const VideoBackground = ({id}) => {
             "?autoplay=1&mute=1&loop=1&playlist=" + key + "&controls=0&modestbranding=1&showinfo=0"
             }
             title="YouTube video player" 
-            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
             allowFullScreen
         />
