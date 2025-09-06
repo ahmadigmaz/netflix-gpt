@@ -85,6 +85,8 @@ const Login = () => {
             alt="background-img"
             className="absolute inset-0 w-full h-full object-cover"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-transparent"></div>
+
 
         {/* Form container */}
         <div className="absolute inset-0 flex items-center justify-center">

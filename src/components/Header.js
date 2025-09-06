@@ -23,22 +23,26 @@ const Header = () => {
   };
 
 useEffect(()=>{
-  onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const {uid,email, displayName, photoURL} = user
-    dispatch(addUser({
-      uid:uid,
-      email:email,
-      displayName:displayName,
-      photoURL:photoURL
-  }))
-   navigate("/browse");
-  }
-  else {
-   dispatch(removeUser());
-   navigate("/")
-  }
-});
+      const unsubscribe =  onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const {uid,email, displayName, photoURL} = user
+        dispatch(addUser({
+          uid:uid,
+          email:email,
+          displayName:displayName,
+          photoURL:photoURL
+      }))
+      navigate("/browse");
+      }
+      else {
+      dispatch(removeUser());
+      navigate("/")
+      }
+    })
+
+    //unsubscribe the onAuthStateChange api once useeffect do his work
+    return () => unsubscribe();
+
 },[])
 
 
@@ -52,11 +56,11 @@ useEffect(()=>{
   const stop = (e) => e.stopPropagation();
 
   return (
-    <div className="absolute inset-x-0 top-0 px-4 sm:px-8 md:px-16 py-1 bg-gradient-to-b z-10 flex justify-between items-center">
+    <div className="fixed top-0 left-0 w-full z-50 bg-gradient-to-b from-black/80 to-transparent px-4 sm:px-8 md:px-16 py-2 flex justify-between items-center">
       <img
         src={NETFLIX_LOGO}
         alt="netflix-logo"
-        className="w-16 sm:w-24 md:w-28 lg:w-32 xl:w-36 object-contain"
+        className="w-20 sm:w-28 md:w-32 lg:w-36 xl:w-40 object-contain"
       />
       {user && (
         // NOTE: "group" enables group-hover, and we're also using isOpen state for clicks
