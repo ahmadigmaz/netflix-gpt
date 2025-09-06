@@ -6,14 +6,23 @@ import { addUser, removeUser } from "../Utils/userSlice";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../Utils/firebase";
+import useNowPlayingMovies from "../hooks/useNowPlayingMovies";
+import usePopular from "../hooks/usePopular";
+import useTopRated from "../hooks/useTopRated";
 import useTvShows from "../hooks/useTvShows";
+import useUpcomming from "../hooks/useUpcomming";
+
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
-  useTvShows();
+       useNowPlayingMovies();
+       useTvShows();
+       usePopular();
+       useTopRated();
+       useUpcomming();
 
 const logOuthandler = () => {
   signOut(auth)
